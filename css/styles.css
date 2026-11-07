@@ -1,0 +1,142 @@
+ * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            min-height: 100%;
+            margin: 0;
+            background: #000;
+            font-family: Inter, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .calculator {
+            width: 390px;
+            max-width: 100%;
+            padding: 12px;
+            background: #000;
+            border-radius: 30px;
+        }
+
+        .display {
+            height: 205px;
+            padding: 12px 8px 22px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: flex-end;
+            overflow: hidden;
+        }
+
+        /* Gray completed calculation */
+        .expression {
+            width: 100%;
+            min-height: 30px;
+            color: #888;
+            font-size: 20px;
+            font-weight: 400;
+            text-align: right;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        /* White live expression */
+        .main-display {
+            width: 100%;
+            color: #fff;
+            font-size: 64px;
+            font-weight: 400;
+            line-height: 1.2;
+            text-align: right;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .keys {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 5px;
+            justify-items: center;
+        }
+
+        button {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            padding: 0;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #333;
+            color: #fff;
+            font-family: Inter, sans-serif;
+            font-size: 32px;
+            font-weight: 400;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        button:focus-visible {
+            outline: 2px solid #fff;
+            outline-offset: 3px;
+        }
+
+        button:active {
+            filter: brightness(1.35);
+        }
+
+        /* Light gray utility buttons */
+        .utility {
+            background: #777;
+            color: #fff;
+            font-size: 27px;
+        }
+
+        .utility[data-action="backspace"] {
+            font-size: 33px;
+            line-height: 1;
+        }
+
+        /* Dark gray +/- button */
+        .sign-button {
+            background: #333;
+            color: #fff;
+            font-size: 27px;
+        }
+
+        /* Orange operator buttons */
+        .operator {
+            background: #ff9f0a;
+            color: #fff;
+            font-size: 34px;
+        }
+
+        /* Selected operators remain orange */
+        .operator.selected {
+            background: #ff9f0a;
+            color: #fff;
+        }
+
+        /* Pressed operators become lighter orange */
+        .operator:active,
+        .operator.selected:active {
+            background: #ffbd4a;
+            color: #fff;
+            filter: none;
+        }
+
+        @media (max-width: 390px) {
+            .calculator {
+                width: 100%;
+            }
+        }
