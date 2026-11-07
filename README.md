@@ -1,2 +1,809 @@
 # Calculator
-A very "normal" calculator, heh.
+A very "normal" calculator, heh. This one is a hyper-realistic calculator to resemble Apple's calculator interface. You can copy this snippet below if you want to use my work and make changes to the code. The calculator behavior and style is recreated in HTML/CSS/JS, making math easier.
+
+## What it does:
+
+- Does math: Like any ordinary calculator.
+- Has logic: Using JavaScript code.
+- Is Apple-style: Using CSS.
+
+## Snippet
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            min-height: 100%;
+            margin: 0;
+            background: #000;
+            font-family: Inter, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .calculator {
+            width: 390px;
+            max-width: 100%;
+            padding: 12px;
+            background: #000;
+            border-radius: 30px;
+        }
+
+        .display {
+            height: 205px;
+            padding: 12px 8px 22px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: flex-end;
+            overflow: hidden;
+        }
+
+        /* Gray completed calculation */
+        .expression {
+            width: 100%;
+            min-height: 30px;
+            color: #888;
+            font-size: 20px;
+            font-weight: 400;
+            text-align: right;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        /* White live expression */
+        .main-display {
+            width: 100%;
+            color: #fff;
+            font-size: 64px;
+            font-weight: 400;
+            line-height: 1.2;
+            text-align: right;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .keys {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 5px;
+            justify-items: center;
+        }
+
+        button {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            padding: 0;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #333;
+            color: #fff;
+            font-family: Inter, sans-serif;
+            font-size: 32px;
+            font-weight: 400;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        button:focus-visible {
+            outline: 2px solid #fff;
+            outline-offset: 3px;
+        }
+
+        button:active {
+            filter: brightness(1.35);
+        }
+
+        /* Light gray utility buttons */
+        .utility {
+            background: #777;
+            color: #fff;
+            font-size: 27px;
+        }
+
+        .utility[data-action="backspace"] {
+            font-size: 33px;
+            line-height: 1;
+        }
+
+        /* Dark gray +/- button */
+        .sign-button {
+            background: #333;
+            color: #fff;
+            font-size: 27px;
+        }
+
+        /* Orange operator buttons */
+        .operator {
+            background: #ff9f0a;
+            color: #fff;
+            font-size: 34px;
+        }
+
+        /* Selected operators remain orange */
+        .operator.selected {
+            background: #ff9f0a;
+            color: #fff;
+        }
+
+        /* Pressed operators become lighter orange */
+        .operator:active,
+        .operator.selected:active {
+            background: #ffbd4a;
+            color: #fff;
+            filter: none;
+        }
+
+        @media (max-width: 390px) {
+            .calculator {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="calculator">
+
+    <div class="display">
+        <div class="expression" id="expression"></div>
+        <div class="main-display" id="display">0</div>
+    </div>
+
+    <section class="keys" aria-label="Calculator buttons">
+
+        <!-- First row -->
+        <button class="utility" data-action="backspace" aria-label="Backspace">⌫</button>
+        <button class="utility" data-action="clear" id="clearButton">AC</button>
+        <button class="utility" data-action="percent">%</button>
+        <button class="operator" data-op="÷">÷</button>
+
+        <!-- Second row -->
+        <button data-number="7">7</button>
+        <button data-number="8">8</button>
+        <button data-number="9">9</button>
+        <button class="operator" data-op="×">×</button>
+
+        <!-- Third row -->
+        <button data-number="4">4</button>
+        <button data-number="5">5</button>
+        <button data-number="6">6</button>
+        <button class="operator" data-op="−">−</button>
+
+        <!-- Fourth row -->
+        <button data-number="1">1</button>
+        <button data-number="2">2</button>
+        <button data-number="3">3</button>
+        <button class="operator" data-op="+">+</button>
+
+        <!-- Fifth row -->
+        <button class="sign-button" data-action="sign">+/−</button>
+        <button data-number="0">0</button>
+        <button data-action="decimal">.</button>
+        <button class="operator" data-action="equals">=</button>
+
+    </section>
+</div>
+
+<script>
+    const display = document.getElementById("display");
+    const expressionDisplay = document.getElementById("expression");
+    const clearButton = document.getElementById("clearButton");
+
+    let entry = "0";
+
+    let accumulator = null;
+    let pendingOperator = null;
+
+    let waitingForOperand = false;
+    let justEvaluated = false;
+    let errorState = false;
+
+    let lastOperator = null;
+    let lastOperand = null;
+
+    let completedExpression = "";
+    let liveExpression = "0";
+
+    const THIN_SPACE = "\u2009";
+
+    function formatNumber(number) {
+        if (!Number.isFinite(number)) {
+            return "Error";
+        }
+
+        if (Object.is(number, -0)) {
+            number = 0;
+        }
+
+        return Number.parseFloat(number.toPrecision(12)).toString();
+    }
+
+    function formatLiveExpression(first, operator, second = null) {
+        if (second === null) {
+            return `${formatNumber(first)}${THIN_SPACE}${operator}`;
+        }
+
+        return `${formatNumber(first)}${THIN_SPACE}${operator}${THIN_SPACE}${second}`;
+    }
+
+    function updateDisplay() {
+        display.textContent = liveExpression;
+        expressionDisplay.textContent = completedExpression;
+
+        clearButton.textContent =
+            entry === "0" && pendingOperator === null
+                ? "AC"
+                : "C";
+
+        // Dynamically shrink long expressions.
+        const length = liveExpression.length;
+
+        let fontSize = 64;
+
+        if (length > 9) {
+            fontSize = Math.max(30, 64 - (length - 9) * 3);
+        }
+
+        display.style.fontSize = `${fontSize}px`;
+    }
+
+    function updateSelectedOperator() {
+        document.querySelectorAll(".operator[data-op]").forEach(button => {
+            button.classList.toggle(
+                "selected",
+                button.dataset.op === pendingOperator
+            );
+        });
+    }
+
+    function clearAll() {
+        entry = "0";
+
+        accumulator = null;
+        pendingOperator = null;
+
+        waitingForOperand = false;
+        justEvaluated = false;
+        errorState = false;
+
+        lastOperator = null;
+        lastOperand = null;
+
+        liveExpression = "0";
+        completedExpression = "";
+
+        updateSelectedOperator();
+        updateDisplay();
+    }
+
+    function clearEntry() {
+        if (errorState) {
+            clearAll();
+            return;
+        }
+
+        entry = "0";
+        justEvaluated = false;
+
+        if (pendingOperator !== null) {
+            waitingForOperand = true;
+
+            liveExpression = formatLiveExpression(
+                accumulator,
+                pendingOperator
+            );
+        } else {
+            waitingForOperand = false;
+            accumulator = null;
+
+            liveExpression = "0";
+            completedExpression = "";
+
+            lastOperator = null;
+            lastOperand = null;
+        }
+
+        updateDisplay();
+    }
+
+    function handleClear() {
+        if (clearButton.textContent === "AC") {
+            clearAll();
+        } else {
+            clearEntry();
+        }
+    }
+
+    function startNewCalculation() {
+        accumulator = null;
+        pendingOperator = null;
+
+        waitingForOperand = false;
+        justEvaluated = false;
+
+        lastOperator = null;
+        lastOperand = null;
+
+        completedExpression = "";
+        liveExpression = "";
+
+        updateSelectedOperator();
+    }
+
+    function inputNumber(number) {
+        if (errorState) {
+            clearAll();
+        }
+
+        if (justEvaluated) {
+            startNewCalculation();
+            entry = number;
+            liveExpression = number;
+        } else if (waitingForOperand) {
+            entry = number;
+            waitingForOperand = false;
+        } else {
+            const digitCount = entry.replace(/[-.]/g, "").length;
+
+            if (digitCount >= 16) {
+                return;
+            }
+
+            if (entry === "0") {
+                entry = number;
+            } else if (entry === "-0") {
+                entry = "-" + number;
+            } else {
+                entry += number;
+            }
+        }
+
+        if (pendingOperator !== null) {
+            liveExpression = formatLiveExpression(
+                accumulator,
+                pendingOperator,
+                entry
+            );
+        } else {
+            liveExpression = entry;
+        }
+
+        updateDisplay();
+    }
+
+    function inputDecimal() {
+        if (errorState) {
+            clearAll();
+        }
+
+        if (justEvaluated) {
+            startNewCalculation();
+            entry = "0.";
+        } else if (waitingForOperand) {
+            entry = "0.";
+            waitingForOperand = false;
+        } else if (!entry.includes(".")) {
+            entry += ".";
+        }
+
+        if (pendingOperator !== null) {
+            liveExpression = formatLiveExpression(
+                accumulator,
+                pendingOperator,
+                entry
+            );
+        } else {
+            liveExpression = entry;
+        }
+
+        updateDisplay();
+    }
+
+    function calculate(first, operator, second) {
+        switch (operator) {
+            case "+":
+                return first + second;
+
+            case "−":
+                return first - second;
+
+            case "×":
+                return first * second;
+
+            case "÷":
+                return second === 0 ? NaN : first / second;
+
+            default:
+                return second;
+        }
+    }
+
+    function selectOperator(operator) {
+        if (errorState) {
+            return;
+        }
+
+        completedExpression = "";
+
+        // Replace the pending operator if the second operand hasn't started.
+        if (pendingOperator !== null && waitingForOperand) {
+            pendingOperator = operator;
+
+            liveExpression = formatLiveExpression(
+                accumulator,
+                pendingOperator
+            );
+
+            updateSelectedOperator();
+            updateDisplay();
+            return;
+        }
+
+        // Evaluate the previous operation from left to right.
+        if (pendingOperator !== null && !waitingForOperand) {
+            const result = calculate(
+                accumulator,
+                pendingOperator,
+                Number(entry)
+            );
+
+            if (!Number.isFinite(result)) {
+                showError();
+                return;
+            }
+
+            accumulator = result;
+            entry = formatNumber(result);
+        } else if (accumulator === null) {
+            accumulator = Number(entry);
+        }
+
+        if (justEvaluated) {
+            lastOperator = null;
+            lastOperand = null;
+        }
+
+        pendingOperator = operator;
+        waitingForOperand = true;
+        justEvaluated = false;
+
+        liveExpression = formatLiveExpression(
+            accumulator,
+            pendingOperator
+        );
+
+        updateSelectedOperator();
+        updateDisplay();
+    }
+
+    function equals() {
+        if (errorState) {
+            return;
+        }
+
+        if (pendingOperator !== null) {
+            const first = accumulator;
+
+            const second = waitingForOperand
+                ? accumulator
+                : Number(entry);
+
+            const operator = pendingOperator;
+
+            const result = calculate(
+                first,
+                operator,
+                second
+            );
+
+            if (!Number.isFinite(result)) {
+                showError();
+                return;
+            }
+
+            lastOperator = operator;
+            lastOperand = second;
+
+            completedExpression =
+                `${formatLiveExpression(first, operator, formatNumber(second))} =`;
+
+            entry = formatNumber(result);
+            accumulator = result;
+
+            pendingOperator = null;
+            waitingForOperand = false;
+            justEvaluated = true;
+
+            liveExpression = entry;
+
+            updateSelectedOperator();
+            updateDisplay();
+            return;
+        }
+
+        // Repeated equals repeats the previous calculation.
+        if (justEvaluated && lastOperator !== null) {
+            const first = Number(entry);
+
+            const result = calculate(
+                first,
+                lastOperator,
+                lastOperand
+            );
+
+            if (!Number.isFinite(result)) {
+                showError();
+                return;
+            }
+
+            completedExpression =
+                `${formatLiveExpression(first, lastOperator, formatNumber(lastOperand))} =`;
+
+            entry = formatNumber(result);
+            accumulator = result;
+            liveExpression = entry;
+
+            updateDisplay();
+        }
+    }
+
+    function percent() {
+        if (errorState || waitingForOperand) {
+            return;
+        }
+
+        const value = Number(entry);
+        let result;
+
+        if (
+            pendingOperator === "+" ||
+            pendingOperator === "−"
+        ) {
+            result = accumulator * value / 100;
+        } else {
+            result = value / 100;
+        }
+
+        if (!Number.isFinite(result)) {
+            showError();
+            return;
+        }
+
+        entry = formatNumber(result);
+        waitingForOperand = false;
+        justEvaluated = false;
+
+        if (pendingOperator !== null) {
+            liveExpression = formatLiveExpression(
+                accumulator,
+                pendingOperator,
+                entry
+            );
+        } else {
+            liveExpression = entry;
+        }
+
+        updateDisplay();
+    }
+
+    function toggleSign() {
+        if (errorState) {
+            return;
+        }
+
+        if (entry.startsWith("-")) {
+            entry = entry.slice(1);
+        } else {
+            entry = "-" + entry;
+        }
+
+        if (pendingOperator !== null) {
+            waitingForOperand = false;
+
+            liveExpression = formatLiveExpression(
+                accumulator,
+                pendingOperator,
+                entry
+            );
+        } else {
+            liveExpression = entry;
+        }
+
+        justEvaluated = false;
+        updateDisplay();
+    }
+
+    function backspace() {
+        if (errorState) {
+            clearAll();
+            return;
+        }
+
+        if (justEvaluated) {
+            justEvaluated = false;
+            lastOperator = null;
+            lastOperand = null;
+            accumulator = null;
+            pendingOperator = null;
+            completedExpression = "";
+            liveExpression = entry;
+        }
+
+        if (pendingOperator !== null && waitingForOperand) {
+            // Remove the pending operator.
+            entry = formatNumber(accumulator);
+
+            accumulator = null;
+            pendingOperator = null;
+            waitingForOperand = false;
+
+            liveExpression = entry;
+
+            updateSelectedOperator();
+            updateDisplay();
+            return;
+        }
+
+        if (pendingOperator !== null && !waitingForOperand) {
+            // Remove the entire second operand.
+            entry = "0";
+            waitingForOperand = true;
+
+            liveExpression = formatLiveExpression(
+                accumulator,
+                pendingOperator
+            );
+
+            updateDisplay();
+            return;
+        }
+
+        if (entry.length > 1) {
+            entry = entry.slice(0, -1);
+
+            if (entry === "-" || entry === "") {
+                entry = "0";
+            }
+        } else {
+            entry = "0";
+        }
+
+        liveExpression = entry;
+        updateDisplay();
+    }
+
+    function showError() {
+        entry = "Error";
+
+        accumulator = null;
+        pendingOperator = null;
+
+        waitingForOperand = false;
+        justEvaluated = false;
+        errorState = true;
+
+        lastOperator = null;
+        lastOperand = null;
+
+        liveExpression = "Error";
+        completedExpression = "";
+
+        updateSelectedOperator();
+        updateDisplay();
+    }
+
+    // Button interaction
+    document.querySelector(".keys").addEventListener("click", event => {
+        const button = event.target.closest("button");
+
+        if (!button) {
+            return;
+        }
+
+        if (button.dataset.number !== undefined) {
+            inputNumber(button.dataset.number);
+            return;
+        }
+
+        if (button.dataset.op !== undefined) {
+            selectOperator(button.dataset.op);
+            return;
+        }
+
+        switch (button.dataset.action) {
+            case "clear":
+                handleClear();
+                break;
+
+            case "backspace":
+                backspace();
+                break;
+
+            case "percent":
+                percent();
+                break;
+
+            case "sign":
+                toggleSign();
+                break;
+
+            case "decimal":
+                inputDecimal();
+                break;
+
+            case "equals":
+                equals();
+                break;
+        }
+    });
+
+    // Keyboard support
+    document.addEventListener("keydown", event => {
+        if (
+            event.target instanceof HTMLInputElement ||
+            event.target instanceof HTMLTextAreaElement
+        ) {
+            return;
+        }
+
+        const key = event.key;
+
+        if (/^[0-9]$/.test(key)) {
+            inputNumber(key);
+        } else if (key === ".") {
+            inputDecimal();
+        } else if (key === "+") {
+            selectOperator("+");
+        } else if (key === "-") {
+            selectOperator("−");
+        } else if (key === "*") {
+            selectOperator("×");
+        } else if (key === "/") {
+            event.preventDefault();
+            selectOperator("÷");
+        } else if (key === "%") {
+            percent();
+        } else if (key === "Enter" || key === "=") {
+            event.preventDefault();
+            equals();
+        } else if (key === "Backspace") {
+            event.preventDefault();
+            backspace();
+        } else if (key === "Escape") {
+            clearAll();
+        }
+    });
+
+    updateDisplay();
+</script>
+
+</body>
+</html>
+```
