@@ -10,6 +10,7 @@ A very "normal" calculator, heh. This one is a hyper-realistic calculator to res
 ## Snippet
 
 ```html
+<!-- shucks it is f*king long (sorry it has profanity, remove this) -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -807,3 +808,22 @@ A very "normal" calculator, heh. This one is a hyper-realistic calculator to res
 </body>
 </html>
 ```
+
+## Hosting:
+
+This is a Jekyll website hosted via GitHub Pages. You don't need to use Jekyll stuff, just use this simple setup:
+
+- First, go to `Settings` then `Pages`.
+- Secondly, click on `main / master` and then click `root`.
+- Third, wait a minute or two until your website is hosted.
+- Now, the website is usable!
+
+## Forking
+
+It is open source, so yeah, you can fork it, since it does have the Apache 2.0 license, which grants modification.
+
+## Credits/License
+
+Licensed by the Apache 2.0 license.
+
+Recreated by me. ©2017-2024 Apple for the Calculator design (without Liquid Glass).
