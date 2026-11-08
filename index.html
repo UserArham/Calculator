@@ -1,101 +1,195 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000000">
     <title>Calculator</title>
+
+    <!-- =========================================================
+         FONT CONNECTIONS
+         ========================================================= -->
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- =========================================================
+         STYLES
+         ========================================================= -->
 
     <style>
+
+        /* =====================================================
+           GLOBAL RESET
+           ===================================================== */
+
         * {
             box-sizing: border-box;
         }
 
-        html, body {
+        html {
             width: 100%;
             min-height: 100%;
             margin: 0;
+            padding: 0;
             background: #000;
-            font-family: Inter, sans-serif;
         }
 
         body {
+            width: 100%;
             min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            background: #000;
+            color: #fff;
+            font-family: Inter, sans-serif;
+
             display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
+
+            overflow-x: hidden;
         }
+
+        /* =====================================================
+           CALCULATOR CONTAINER
+           ===================================================== */
 
         .calculator {
             width: 390px;
             max-width: 100%;
             padding: 12px;
+            margin: 0 auto;
+
             background: #000;
             border-radius: 30px;
+
+            display: flex;
+            flex-direction: column;
         }
 
+        /* =====================================================
+           DISPLAY CONTAINER
+           ===================================================== */
+
         .display {
+            width: 100%;
             height: 205px;
             padding: 12px 8px 22px;
+
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
             align-items: flex-end;
+
             overflow: hidden;
         }
 
-        /* Gray completed calculation */
+        /* =====================================================
+           PREVIOUS EXPRESSION
+           ===================================================== */
+
         .expression {
             width: 100%;
             min-height: 30px;
+
             color: #888;
             font-size: 20px;
             font-weight: 400;
+            line-height: 1.4;
+
             text-align: right;
             white-space: nowrap;
+
             overflow: hidden;
+            text-overflow: clip;
         }
 
-        /* White live expression */
+        /* =====================================================
+           MAIN CALCULATOR DISPLAY
+           ===================================================== */
+
         .main-display {
             width: 100%;
+            min-height: 76px;
+
             color: #fff;
             font-size: 64px;
             font-weight: 400;
             line-height: 1.2;
+
             text-align: right;
             white-space: nowrap;
+
             overflow: hidden;
+            text-overflow: clip;
         }
 
+        /* =====================================================
+           KEYPAD
+           ===================================================== */
+
         .keys {
+            width: 100%;
+
             display: grid;
             grid-template-columns: repeat(4, minmax(0, 1fr));
+
             gap: 5px;
             justify-items: center;
+            align-items: center;
         }
+
+        /* =====================================================
+           GENERAL BUTTON STYLE
+           ===================================================== */
 
         button {
             width: 100%;
             aspect-ratio: 1 / 1;
+
             padding: 0;
+            margin: 0;
+
             border: none;
             border-radius: 50%;
+
             display: flex;
             align-items: center;
             justify-content: center;
+
             background: #333;
             color: #fff;
+
             font-family: Inter, sans-serif;
             font-size: 32px;
             font-weight: 400;
+
             cursor: pointer;
             user-select: none;
+            -webkit-user-select: none;
             -webkit-tap-highlight-color: transparent;
+
             touch-action: manipulation;
+
+            transition:
+                filter 90ms ease,
+                background-color 90ms ease,
+                transform 90ms ease;
+        }
+
+        /* =====================================================
+           BUTTON FOCUS
+           ===================================================== */
+
+        button:focus {
+            outline: none;
         }
 
         button:focus-visible {
@@ -103,11 +197,19 @@
             outline-offset: 3px;
         }
 
+        /* =====================================================
+           BUTTON ACTIVE STATE
+           ===================================================== */
+
         button:active {
             filter: brightness(1.35);
+            transform: scale(0.97);
         }
 
-        /* Light gray utility buttons */
+        /* =====================================================
+           UTILITY BUTTONS
+           ===================================================== */
+
         .utility {
             background: #777;
             color: #fff;
@@ -119,678 +221,2111 @@
             line-height: 1;
         }
 
-        /* Dark gray +/- button */
+        /* =====================================================
+           SIGN BUTTON
+           ===================================================== */
+
         .sign-button {
             background: #333;
             color: #fff;
             font-size: 27px;
         }
 
-        /* Orange operator buttons */
+        /* =====================================================
+           OPERATOR BUTTONS
+           ===================================================== */
+
         .operator {
             background: #ff9f0a;
             color: #fff;
             font-size: 34px;
         }
 
-        /* Selected operators remain orange */
+        .operator:active {
+            background: #ffbd4a;
+            color: #fff;
+            filter: none;
+        }
+
+        /* =====================================================
+           SELECTED OPERATOR
+           ===================================================== */
+
         .operator.selected {
             background: #ff9f0a;
             color: #fff;
         }
 
-        /* Pressed operators become lighter orange */
-        .operator:active,
-        .operator.selected:active {
-            background: #ffbd4a;
-            color: #fff;
-            filter: none;
-        }
+        /* =====================================================
+           RESPONSIVE DISPLAY
+           ===================================================== */
 
         @media (max-width: 390px) {
             .calculator {
                 width: 100%;
             }
         }
+
+        /* =====================================================
+           SMALL SCREEN HEIGHT
+           ===================================================== */
+
+        @media (max-height: 600px) {
+            body {
+                align-items: flex-start;
+            }
+
+            .calculator {
+                margin-top: 8px;
+            }
+
+            .display {
+                height: 170px;
+            }
+        }
+
+        /* =====================================================
+           REDUCED MOTION
+           ===================================================== */
+
+        @media (prefers-reduced-motion: reduce) {
+            button {
+                transition: none;
+            }
+        }
+
     </style>
 </head>
 
 <body>
 
-<div class="calculator">
+    <!-- =========================================================
+         CALCULATOR
+         ========================================================= -->
 
-    <div class="display">
-        <div class="expression" id="expression"></div>
-        <div class="main-display" id="display">0</div>
-    </div>
+    <main class="calculator">
 
-    <section class="keys" aria-label="Calculator buttons">
+        <!-- =====================================================
+             DISPLAY
+             ===================================================== -->
 
-        <!-- First row -->
-        <button class="utility" data-action="backspace" aria-label="Backspace">⌫</button>
-        <button class="utility" data-action="clear" id="clearButton">AC</button>
-        <button class="utility" data-action="percent">%</button>
-        <button class="operator" data-op="÷">÷</button>
+        <section class="display" aria-label="Calculator display">
 
-        <!-- Second row -->
-        <button data-number="7">7</button>
-        <button data-number="8">8</button>
-        <button data-number="9">9</button>
-        <button class="operator" data-op="×">×</button>
+            <div
+                class="expression"
+                id="expression"
+                aria-live="polite"
+            ></div>
 
-        <!-- Third row -->
-        <button data-number="4">4</button>
-        <button data-number="5">5</button>
-        <button data-number="6">6</button>
-        <button class="operator" data-op="−">−</button>
+            <div
+                class="main-display"
+                id="display"
+                aria-live="polite"
+            >0</div>
 
-        <!-- Fourth row -->
-        <button data-number="1">1</button>
-        <button data-number="2">2</button>
-        <button data-number="3">3</button>
-        <button class="operator" data-op="+">+</button>
+        </section>
 
-        <!-- Fifth row -->
-        <button class="sign-button" data-action="sign">+/−</button>
-        <button data-number="0">0</button>
-        <button data-action="decimal">.</button>
-        <button class="operator" data-action="equals">=</button>
+        <!-- =====================================================
+             KEYPAD
+             ===================================================== -->
 
-    </section>
-</div>
+        <section
+            class="keys"
+            aria-label="Calculator buttons"
+        >
 
-<script>
-    const display = document.getElementById("display");
-    const expressionDisplay = document.getElementById("expression");
-    const clearButton = document.getElementById("clearButton");
+            <!-- First row -->
 
-    let entry = "0";
+            <button
+                class="utility"
+                data-action="backspace"
+                aria-label="Backspace"
+                type="button"
+            >⌫</button>
 
-    let accumulator = null;
-    let pendingOperator = null;
+            <button
+                class="utility"
+                data-action="clear"
+                id="clearButton"
+                type="button"
+            >AC</button>
 
-    let waitingForOperand = false;
-    let justEvaluated = false;
-    let errorState = false;
+            <button
+                class="utility"
+                data-action="percent"
+                type="button"
+            >%</button>
 
-    let lastOperator = null;
-    let lastOperand = null;
+            <button
+                class="operator"
+                data-op="÷"
+                type="button"
+            >÷</button>
 
-    let completedExpression = "";
-    let liveExpression = "0";
+            <!-- Second row -->
 
-    const THIN_SPACE = "\u2009";
+            <button data-number="7" type="button">7</button>
+            <button data-number="8" type="button">8</button>
+            <button data-number="9" type="button">9</button>
 
-    function formatNumber(number) {
-        if (!Number.isFinite(number)) {
-            return "Error";
+            <button
+                class="operator"
+                data-op="×"
+                type="button"
+            >×</button>
+
+            <!-- Third row -->
+
+            <button data-number="4" type="button">4</button>
+            <button data-number="5" type="button">5</button>
+            <button data-number="6" type="button">6</button>
+
+            <button
+                class="operator"
+                data-op="−"
+                type="button"
+            >−</button>
+
+            <!-- Fourth row -->
+
+            <button data-number="1" type="button">1</button>
+            <button data-number="2" type="button">2</button>
+            <button data-number="3" type="button">3</button>
+
+            <button
+                class="operator"
+                data-op="+"
+                type="button"
+            >+</button>
+
+            <!-- Fifth row -->
+
+            <button
+                class="sign-button"
+                data-action="sign"
+                type="button"
+            >+/−</button>
+
+            <button data-number="0" type="button">0</button>
+
+            <button
+                data-action="decimal"
+                type="button"
+            >.</button>
+
+            <button
+                class="operator"
+                data-action="equals"
+                type="button"
+            >=</button>
+
+        </section>
+
+    </main>
+
+    <!-- =========================================================
+         JAVASCRIPT
+         ========================================================= -->
+
+    <script>
+
+        "use strict";
+
+
+        /* =========================================================
+           1. DOM ELEMENTS
+           ========================================================= */
+
+        const display = document.getElementById("display");
+
+        const expressionDisplay =
+            document.getElementById("expression");
+
+        const clearButton =
+            document.getElementById("clearButton");
+
+        const keypad =
+            document.querySelector(".keys");
+
+
+        /* =========================================================
+           2. CALCULATOR STATE
+           ========================================================= */
+
+        let expression = "";
+
+        let completedExpression = "";
+
+        let justEvaluated = false;
+
+        let errorState = false;
+
+        let lastResult = null;
+
+
+        /* =========================================================
+           3. OPERATOR SYMBOLS
+           ========================================================= */
+
+        const OPERATOR_SYMBOLS = {
+            "+": "+",
+            "-": "−",
+            "*": "×",
+            "/": "÷"
+        };
+
+
+        /* =========================================================
+           4. EXPRESSION HELPERS
+           ========================================================= */
+
+        function isDigit(character) {
+            return /^[0-9]$/.test(character);
         }
 
-        if (Object.is(number, -0)) {
-            number = 0;
-        }
 
-        return Number.parseFloat(number.toPrecision(12)).toString();
-    }
-
-    function formatLiveExpression(first, operator, second = null) {
-        if (second === null) {
-            return `${formatNumber(first)}${THIN_SPACE}${operator}`;
-        }
-
-        return `${formatNumber(first)}${THIN_SPACE}${operator}${THIN_SPACE}${second}`;
-    }
-
-    function updateDisplay() {
-        display.textContent = liveExpression;
-        expressionDisplay.textContent = completedExpression;
-
-        clearButton.textContent =
-            entry === "0" && pendingOperator === null
-                ? "AC"
-                : "C";
-
-        // Dynamically shrink long expressions.
-        const length = liveExpression.length;
-
-        let fontSize = 64;
-
-        if (length > 9) {
-            fontSize = Math.max(30, 64 - (length - 9) * 3);
-        }
-
-        display.style.fontSize = `${fontSize}px`;
-    }
-
-    function updateSelectedOperator() {
-        document.querySelectorAll(".operator[data-op]").forEach(button => {
-            button.classList.toggle(
-                "selected",
-                button.dataset.op === pendingOperator
+        function isVisibleOperator(character) {
+            return (
+                character === "+" ||
+                character === "−" ||
+                character === "×" ||
+                character === "÷"
             );
-        });
-    }
-
-    function clearAll() {
-        entry = "0";
-
-        accumulator = null;
-        pendingOperator = null;
-
-        waitingForOperand = false;
-        justEvaluated = false;
-        errorState = false;
-
-        lastOperator = null;
-        lastOperand = null;
-
-        liveExpression = "0";
-        completedExpression = "";
-
-        updateSelectedOperator();
-        updateDisplay();
-    }
-
-    function clearEntry() {
-        if (errorState) {
-            clearAll();
-            return;
         }
 
-        entry = "0";
-        justEvaluated = false;
 
-        if (pendingOperator !== null) {
-            waitingForOperand = true;
-
-            liveExpression = formatLiveExpression(
-                accumulator,
-                pendingOperator
+        function isInternalOperator(character) {
+            return (
+                character === "+" ||
+                character === "-" ||
+                character === "*" ||
+                character === "/"
             );
-        } else {
-            waitingForOperand = false;
-            accumulator = null;
-
-            liveExpression = "0";
-            completedExpression = "";
-
-            lastOperator = null;
-            lastOperand = null;
         }
 
-        updateDisplay();
-    }
 
-    function handleClear() {
-        if (clearButton.textContent === "AC") {
-            clearAll();
-        } else {
-            clearEntry();
-        }
-    }
-
-    function startNewCalculation() {
-        accumulator = null;
-        pendingOperator = null;
-
-        waitingForOperand = false;
-        justEvaluated = false;
-
-        lastOperator = null;
-        lastOperand = null;
-
-        completedExpression = "";
-        liveExpression = "";
-
-        updateSelectedOperator();
-    }
-
-    function inputNumber(number) {
-        if (errorState) {
-            clearAll();
+        function isOpeningParenthesis(character) {
+            return character === "(";
         }
 
-        if (justEvaluated) {
-            startNewCalculation();
-            entry = number;
-            liveExpression = number;
-        } else if (waitingForOperand) {
-            entry = number;
-            waitingForOperand = false;
-        } else {
-            const digitCount = entry.replace(/[-.]/g, "").length;
 
-            if (digitCount >= 16) {
-                return;
+        function isClosingParenthesis(character) {
+            return character === ")";
+        }
+
+
+        function isNumberCharacter(character) {
+            return (
+                isDigit(character) ||
+                character === "."
+            );
+        }
+
+
+        function getLastCharacter(value) {
+            if (!value) {
+                return "";
             }
 
-            if (entry === "0") {
-                entry = number;
-            } else if (entry === "-0") {
-                entry = "-" + number;
-            } else {
-                entry += number;
+            return value[value.length - 1];
+        }
+
+
+        function getFirstCharacter(value) {
+            if (!value) {
+                return "";
             }
+
+            return value[0];
         }
 
-        if (pendingOperator !== null) {
-            liveExpression = formatLiveExpression(
-                accumulator,
-                pendingOperator,
-                entry
-            );
-        } else {
-            liveExpression = entry;
+
+        /* =========================================================
+           5. EXPRESSION NORMALIZATION
+           ========================================================= */
+
+        /*
+           The visible expression uses:
+           × for multiplication
+           ÷ for division
+           − for subtraction
+
+           The parser uses:
+           * for multiplication
+           / for division
+           - for subtraction
+        */
+
+        function normalizeExpression(value) {
+            return value
+                .replace(/×/g, "*")
+                .replace(/÷/g, "/")
+                .replace(/−/g, "-")
+                .replace(/\s+/g, "");
         }
 
-        updateDisplay();
-    }
 
-    function inputDecimal() {
-        if (errorState) {
-            clearAll();
+        /*
+           Convert an internal expression into visible symbols.
+        */
+
+        function prettyExpression(value) {
+            return value
+                .replace(/\*/g, "×")
+                .replace(/\//g, "÷")
+                .replace(/-/g, "−");
         }
 
-        if (justEvaluated) {
-            startNewCalculation();
-            entry = "0.";
-        } else if (waitingForOperand) {
-            entry = "0.";
-            waitingForOperand = false;
-        } else if (!entry.includes(".")) {
-            entry += ".";
+
+        /* =========================================================
+           6. NUMBER FORMATTING
+           ========================================================= */
+
+        function formatNumber(number) {
+
+            if (!Number.isFinite(number)) {
+                return "Error";
+            }
+
+            if (Object.is(number, -0)) {
+                number = 0;
+            }
+
+            return Number(
+                number.toPrecision(12)
+            ).toString();
         }
 
-        if (pendingOperator !== null) {
-            liveExpression = formatLiveExpression(
-                accumulator,
-                pendingOperator,
-                entry
-            );
-        } else {
-            liveExpression = entry;
+
+        /* =========================================================
+           7. DISPLAY FONT SIZE
+           ========================================================= */
+
+        function adjustDisplaySize() {
+
+            const length = display.textContent.length;
+
+            let fontSize = 64;
+
+            if (length > 9) {
+                fontSize = Math.max(
+                    30,
+                    64 - (length - 9) * 3
+                );
+            }
+
+            if (length > 20) {
+                fontSize = 30;
+            }
+
+            display.style.fontSize = `${fontSize}px`;
         }
 
-        updateDisplay();
-    }
 
-    function calculate(first, operator, second) {
-        switch (operator) {
-            case "+":
-                return first + second;
+        /* =========================================================
+           8. UPDATE DISPLAY
+           ========================================================= */
 
-            case "−":
-                return first - second;
+        function updateDisplay() {
 
-            case "×":
-                return first * second;
+            display.textContent = expression || "0";
 
-            case "÷":
-                return second === 0 ? NaN : first / second;
+            expressionDisplay.textContent =
+                completedExpression;
 
-            default:
-                return second;
-        }
-    }
+            clearButton.textContent =
+                expression === "" ? "AC" : "C";
 
-    function selectOperator(operator) {
-        if (errorState) {
-            return;
-        }
-
-        completedExpression = "";
-
-        // Replace the pending operator if the second operand hasn't started.
-        if (pendingOperator !== null && waitingForOperand) {
-            pendingOperator = operator;
-
-            liveExpression = formatLiveExpression(
-                accumulator,
-                pendingOperator
-            );
+            adjustDisplaySize();
 
             updateSelectedOperator();
-            updateDisplay();
-            return;
         }
 
-        // Evaluate the previous operation from left to right.
-        if (pendingOperator !== null && !waitingForOperand) {
-            const result = calculate(
-                accumulator,
-                pendingOperator,
-                Number(entry)
+
+        /* =========================================================
+           9. SELECTED OPERATOR DISPLAY
+           ========================================================= */
+
+        function updateSelectedOperator() {
+
+            const buttons = document.querySelectorAll(
+                ".operator[data-op]"
             );
 
-            if (!Number.isFinite(result)) {
-                showError();
+            buttons.forEach(function(button) {
+
+                button.classList.remove("selected");
+
+            });
+
+            const lastCharacter =
+                getLastCharacter(expression);
+
+            buttons.forEach(function(button) {
+
+                if (
+                    button.dataset.op === lastCharacter
+                ) {
+                    button.classList.add("selected");
+                }
+
+            });
+        }
+
+
+        /* =========================================================
+           10. ERROR HANDLING
+           ========================================================= */
+
+        function setError(message = "Error") {
+
+            expression = message;
+
+            completedExpression = "";
+
+            justEvaluated = false;
+
+            errorState = true;
+
+            lastResult = null;
+
+            updateDisplay();
+        }
+
+
+        function resetErrorIfNeeded() {
+
+            if (!errorState) {
                 return;
             }
 
-            accumulator = result;
-            entry = formatNumber(result);
-        } else if (accumulator === null) {
-            accumulator = Number(entry);
+            expression = "";
+
+            completedExpression = "";
+
+            justEvaluated = false;
+
+            errorState = false;
+
+            lastResult = null;
         }
 
-        if (justEvaluated) {
-            lastOperator = null;
-            lastOperand = null;
+
+        /* =========================================================
+           11. CLEAR ALL
+           ========================================================= */
+
+        function clearAll() {
+
+            expression = "";
+
+            completedExpression = "";
+
+            justEvaluated = false;
+
+            errorState = false;
+
+            lastResult = null;
+
+            updateDisplay();
         }
 
-        pendingOperator = operator;
-        waitingForOperand = true;
-        justEvaluated = false;
 
-        liveExpression = formatLiveExpression(
-            accumulator,
-            pendingOperator
+        /* =========================================================
+           12. CLEAR CURRENT ENTRY
+           ========================================================= */
+
+        function clearEntry() {
+
+            if (errorState) {
+                clearAll();
+                return;
+            }
+
+            if (!expression) {
+                clearAll();
+                return;
+            }
+
+            /*
+               Find a trailing number, including decimals.
+            */
+
+            const numberMatch = expression.match(
+                /(?:\d+\.?\d*|\.\d+)%?$/
+            );
+
+            if (numberMatch) {
+
+                expression = expression.slice(
+                    0,
+                    numberMatch.index
+                );
+
+            } else {
+
+                expression = expression.slice(0, -1);
+
+            }
+
+            if (!expression) {
+                completedExpression = "";
+            }
+
+            justEvaluated = false;
+
+            updateDisplay();
+        }
+
+
+        /* =========================================================
+           13. NUMBER INPUT
+           ========================================================= */
+
+        function inputNumber(number) {
+
+            resetErrorIfNeeded();
+
+            if (justEvaluated) {
+
+                expression = "";
+
+                completedExpression = "";
+
+                justEvaluated = false;
+
+            }
+
+            const lastCharacter =
+                getLastCharacter(expression);
+
+            /*
+               Start a new number after an operator.
+            */
+
+            if (
+                lastCharacter === ")" ||
+                lastCharacter === "%"
+            ) {
+
+                expression += "×";
+
+            }
+
+            expression += String(number);
+
+            updateDisplay();
+        }
+
+
+        /* =========================================================
+           14. DECIMAL INPUT
+           ========================================================= */
+
+        function inputDecimal() {
+
+            resetErrorIfNeeded();
+
+            if (justEvaluated) {
+
+                expression = "";
+
+                completedExpression = "";
+
+                justEvaluated = false;
+
+            }
+
+            const lastCharacter =
+                getLastCharacter(expression);
+
+            /*
+               Start a new decimal number when necessary.
+            */
+
+            if (
+                expression === "" ||
+                isVisibleOperator(lastCharacter) ||
+                lastCharacter === "("
+            ) {
+
+                expression += "0.";
+
+                updateDisplay();
+
+                return;
+            }
+
+            /*
+               Do not insert a decimal point after a closing
+               parenthesis or percentage.
+            */
+
+            if (
+                lastCharacter === ")" ||
+                lastCharacter === "%"
+            ) {
+
+                expression += "×0.";
+
+                updateDisplay();
+
+                return;
+            }
+
+            /*
+               Find the current number being entered.
+            */
+
+            let currentNumber = "";
+
+            for (
+                let index = expression.length - 1;
+                index >= 0;
+                index--
+            ) {
+
+                const character = expression[index];
+
+                if (
+                    isDigit(character) ||
+                    character === "."
+                ) {
+
+                    currentNumber = character + currentNumber;
+
+                } else {
+
+                    break;
+
+                }
+            }
+
+            /*
+               Only one decimal point per number.
+            */
+
+            if (currentNumber.includes(".")) {
+                return;
+            }
+
+            expression += ".";
+
+            updateDisplay();
+        }
+
+
+        /* =========================================================
+           15. OPERATOR INPUT
+           ========================================================= */
+
+        function selectOperator(operator) {
+
+            resetErrorIfNeeded();
+
+            if (justEvaluated) {
+
+                justEvaluated = false;
+
+                completedExpression = "";
+
+            }
+
+            if (!expression) {
+
+                /*
+                   A leading subtraction sign is allowed.
+                */
+
+                if (operator === "−") {
+
+                    expression = "−";
+
+                    updateDisplay();
+
+                }
+
+                return;
+            }
+
+            const lastCharacter =
+                getLastCharacter(expression);
+
+            /*
+               Replace an existing trailing operator.
+            */
+
+            if (isVisibleOperator(lastCharacter)) {
+
+                /*
+                   Allow a unary minus after multiplication,
+                   division, or an opening parenthesis.
+                */
+
+                if (
+                    operator === "−" &&
+                    (
+                        lastCharacter === "×" ||
+                        lastCharacter === "÷" ||
+                        lastCharacter === "+"
+                    )
+                ) {
+
+                    expression += "−";
+
+                    updateDisplay();
+
+                    return;
+                }
+
+                expression = expression.slice(0, -1);
+
+            }
+
+            /*
+               Do not place a binary operator immediately
+               after an opening parenthesis.
+            */
+
+            if (
+                getLastCharacter(expression) === "("
+            ) {
+
+                if (operator === "−") {
+
+                    expression += "−";
+
+                    updateDisplay();
+
+                }
+
+                return;
+            }
+
+            expression += operator;
+
+            updateDisplay();
+        }
+
+
+        /* =========================================================
+           16. PERCENTAGE INPUT
+           ========================================================= */
+
+        function inputPercent() {
+
+            resetErrorIfNeeded();
+
+            if (justEvaluated) {
+
+                justEvaluated = false;
+
+                completedExpression = "";
+
+            }
+
+            if (!expression) {
+                return;
+            }
+
+            const lastCharacter =
+                getLastCharacter(expression);
+
+            /*
+               A percentage can follow a number or a closing
+               parenthesis.
+            */
+
+            if (
+                isDigit(lastCharacter) ||
+                lastCharacter === ")" ||
+                lastCharacter === "."
+            ) {
+
+                expression += "%";
+
+                updateDisplay();
+
+            }
+        }
+
+
+        /* =========================================================
+           17. SIGN TOGGLE
+           ========================================================= */
+
+        function toggleSign() {
+
+            resetErrorIfNeeded();
+
+            if (justEvaluated) {
+
+                justEvaluated = false;
+
+                completedExpression = "";
+
+            }
+
+            if (!expression) {
+
+                expression = "−";
+
+                updateDisplay();
+
+                return;
+            }
+
+            /*
+               Find the final number in the expression.
+            */
+
+            const match = expression.match(
+                /(?:\d+\.?\d*|\.\d+)%?$/
+            );
+
+            if (!match) {
+
+                if (
+                    isVisibleOperator(
+                        getLastCharacter(expression)
+                    ) ||
+                    getLastCharacter(expression) === "("
+                ) {
+
+                    expression += "−";
+
+                    updateDisplay();
+
+                }
+
+                return;
+            }
+
+            const start = match.index;
+
+            const beforeNumber =
+                expression.slice(0, start);
+
+            const lastBeforeNumber =
+                getLastCharacter(beforeNumber);
+
+            /*
+               Determine whether the existing minus sign
+               is a unary sign.
+            */
+
+            const unaryMinus =
+                lastBeforeNumber === "−" &&
+                (
+                    beforeNumber.length === 1 ||
+                    beforeNumber.length === 0 ||
+                    isVisibleOperator(
+                        beforeNumber[beforeNumber.length - 2]
+                    ) ||
+                    beforeNumber[beforeNumber.length - 2] === "("
+                );
+
+            if (unaryMinus) {
+
+                expression =
+                    beforeNumber.slice(0, -1) +
+                    match[0];
+
+            } else {
+
+                expression =
+                    beforeNumber +
+                    "−" +
+                    match[0];
+
+            }
+
+            updateDisplay();
+        }
+
+
+        /* =========================================================
+           18. BACKSPACE
+           ========================================================= */
+
+        function backspace() {
+
+            if (errorState) {
+
+                clearAll();
+
+                return;
+            }
+
+            if (!expression) {
+                return;
+            }
+
+            expression = expression.slice(0, -1);
+
+            justEvaluated = false;
+
+            if (!expression) {
+                completedExpression = "";
+            }
+
+            updateDisplay();
+        }
+
+
+        /* =========================================================
+           19. OPEN PARENTHESIS
+           ========================================================= */
+
+        function inputOpenParenthesis() {
+
+            resetErrorIfNeeded();
+
+            if (justEvaluated) {
+
+                expression = "";
+
+                completedExpression = "";
+
+                justEvaluated = false;
+
+            }
+
+            const lastCharacter =
+                getLastCharacter(expression);
+
+            /*
+               If a number, percentage, or closing parenthesis
+               comes immediately before an opening parenthesis,
+               insert multiplication.
+            */
+
+            if (
+                isDigit(lastCharacter) ||
+                lastCharacter === ")" ||
+                lastCharacter === "%"
+            ) {
+
+                expression += "×";
+
+            }
+
+            expression += "(";
+
+            updateDisplay();
+        }
+
+
+        /* =========================================================
+           20. CLOSE PARENTHESIS
+           ========================================================= */
+
+        function inputCloseParenthesis() {
+
+            resetErrorIfNeeded();
+
+            if (justEvaluated) {
+                return;
+            }
+
+            if (!expression) {
+                return;
+            }
+
+            const lastCharacter =
+                getLastCharacter(expression);
+
+            /*
+               A closing parenthesis cannot follow an operator
+               or another opening parenthesis.
+            */
+
+            if (
+                isVisibleOperator(lastCharacter) ||
+                lastCharacter === "(" ||
+                lastCharacter === "."
+            ) {
+
+                return;
+            }
+
+            const openCount = (
+                expression.match(/\(/g) || []
+            ).length;
+
+            const closeCount = (
+                expression.match(/\)/g) || []
+            ).length;
+
+            if (openCount > closeCount) {
+
+                expression += ")";
+
+                updateDisplay();
+
+            }
+        }
+
+
+        /* =========================================================
+           21. TOKENIZER
+           ========================================================= */
+
+        function tokenize(source) {
+
+            const normalized =
+                normalizeExpression(source);
+
+            const tokens = [];
+
+            const tokenPattern =
+                /\d*\.?\d+(?:[eE][+-]?\d+)?|[()+\-*/%]/gy;
+
+            let position = 0;
+
+            while (position < normalized.length) {
+
+                tokenPattern.lastIndex = position;
+
+                const match =
+                    tokenPattern.exec(normalized);
+
+                if (!match) {
+
+                    throw new Error(
+                        "Invalid expression"
+                    );
+
+                }
+
+                tokens.push(match[0]);
+
+                position = tokenPattern.lastIndex;
+
+            }
+
+            return tokens;
+        }
+
+
+        /* =========================================================
+           22. EXPRESSION PARSER
+           ========================================================= */
+
+        /*
+           This parser uses recursive descent.
+
+           Its grammar is:
+
+           expression:
+               term
+               term + expression
+               term - expression
+
+           term:
+               unary
+               unary * term
+               unary / term
+
+           unary:
+               + unary
+               - unary
+               postfix
+
+           postfix:
+               primary
+               primary %
+
+           primary:
+               number
+               ( expression )
+
+           This gives multiplication and division higher
+           precedence than addition and subtraction.
+        */
+
+        function parseExpression(source) {
+
+            const tokens = tokenize(source);
+
+            let position = 0;
+
+
+            /* -----------------------------------------------
+               Read the current token.
+               ----------------------------------------------- */
+
+            function peek() {
+
+                return tokens[position] ?? null;
+
+            }
+
+
+            /* -----------------------------------------------
+               Consume a token.
+               ----------------------------------------------- */
+
+            function consume() {
+
+                const token = peek();
+
+                position++;
+
+                return token;
+
+            }
+
+
+            /* -----------------------------------------------
+               Match and consume an expected token.
+               ----------------------------------------------- */
+
+            function match(token) {
+
+                if (peek() === token) {
+
+                    consume();
+
+                    return true;
+
+                }
+
+                return false;
+            }
+
+
+            /* -----------------------------------------------
+               Parse addition and subtraction.
+               ----------------------------------------------- */
+
+            function parseAddSubtract() {
+
+                let value = parseMultiplyDivide();
+
+                while (true) {
+
+                    if (match("+")) {
+
+                        const right =
+                            parseMultiplyDivide();
+
+                        value += right;
+
+                        continue;
+                    }
+
+                    if (match("-")) {
+
+                        const right =
+                            parseMultiplyDivide();
+
+                        value -= right;
+
+                        continue;
+                    }
+
+                    break;
+
+                }
+
+                return value;
+            }
+
+
+            /* -----------------------------------------------
+               Parse multiplication and division.
+               ----------------------------------------------- */
+
+            function parseMultiplyDivide() {
+
+                let value = parseUnary();
+
+                while (true) {
+
+                    if (match("*")) {
+
+                        const right = parseUnary();
+
+                        value *= right;
+
+                        continue;
+                    }
+
+                    if (match("/")) {
+
+                        const right = parseUnary();
+
+                        if (right === 0) {
+
+                            throw new Error(
+                                "Cannot divide by zero"
+                            );
+
+                        }
+
+                        value /= right;
+
+                        continue;
+                    }
+
+                    break;
+
+                }
+
+                return value;
+            }
+
+
+            /* -----------------------------------------------
+               Parse unary plus and minus.
+               ----------------------------------------------- */
+
+            function parseUnary() {
+
+                if (match("+")) {
+
+                    return parseUnary();
+
+                }
+
+                if (match("-")) {
+
+                    return -parseUnary();
+
+                }
+
+                return parsePostfix();
+            }
+
+
+            /* -----------------------------------------------
+               Parse postfix percentages.
+               ----------------------------------------------- */
+
+            function parsePostfix() {
+
+                let value = parsePrimary();
+
+                while (match("%")) {
+
+                    value /= 100;
+
+                }
+
+                return value;
+            }
+
+
+            /* -----------------------------------------------
+               Parse numbers and parentheses.
+               ----------------------------------------------- */
+
+            function parsePrimary() {
+
+                const token = peek();
+
+                if (token === null) {
+
+                    throw new Error(
+                        "Incomplete expression"
+                    );
+
+                }
+
+                /*
+                   Parenthesized expression.
+                */
+
+                if (match("(")) {
+
+                    const value =
+                        parseAddSubtract();
+
+                    if (!match(")")) {
+
+                        throw new Error(
+                            "Missing closing parenthesis"
+                        );
+
+                    }
+
+                    return value;
+                }
+
+                /*
+                   Numeric token.
+                */
+
+                if (
+                    /^(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?$/.test(
+                        token
+                    )
+                ) {
+
+                    consume();
+
+                    const number = Number(token);
+
+                    if (!Number.isFinite(number)) {
+
+                        throw new Error(
+                            "Invalid number"
+                        );
+
+                    }
+
+                    return number;
+                }
+
+                throw new Error(
+                    "Unexpected token"
+                );
+            }
+
+
+            /* -----------------------------------------------
+               Start parsing.
+               ----------------------------------------------- */
+
+            if (tokens.length === 0) {
+
+                throw new Error(
+                    "Empty expression"
+                );
+
+            }
+
+            const result = parseAddSubtract();
+
+            /*
+               Every token must be consumed.
+            */
+
+            if (position !== tokens.length) {
+
+                throw new Error(
+                    "Invalid expression"
+                );
+
+            }
+
+            if (!Number.isFinite(result)) {
+
+                throw new Error(
+                    "Invalid result"
+                );
+
+            }
+
+            return result;
+        }
+
+
+        /* =========================================================
+           23. VALIDATE PARENTHESES
+           ========================================================= */
+
+        function parenthesesAreBalanced(value) {
+
+            let depth = 0;
+
+            for (
+                let index = 0;
+                index < value.length;
+                index++
+            ) {
+
+                if (value[index] === "(") {
+                    depth++;
+                }
+
+                if (value[index] === ")") {
+
+                    depth--;
+
+                }
+
+                if (depth < 0) {
+                    return false;
+                }
+
+            }
+
+            return depth === 0;
+        }
+
+
+        /* =========================================================
+           24. EVALUATE EXPRESSION
+           ========================================================= */
+
+        function evaluateExpression(source) {
+
+            if (!source) {
+
+                throw new Error(
+                    "Nothing to calculate"
+                );
+
+            }
+
+            if (!parenthesesAreBalanced(source)) {
+
+                throw new Error(
+                    "Unbalanced parentheses"
+                );
+
+            }
+
+            const lastCharacter =
+                getLastCharacter(source);
+
+            /*
+               Do not evaluate an incomplete expression.
+            */
+
+            if (
+                isVisibleOperator(lastCharacter) ||
+                lastCharacter === "(" ||
+                lastCharacter === "."
+            ) {
+
+                throw new Error(
+                    "Incomplete expression"
+                );
+
+            }
+
+            return parseExpression(source);
+        }
+
+
+        /* =========================================================
+           25. EQUALS
+           ========================================================= */
+
+        function equals() {
+
+            if (errorState) {
+                return;
+            }
+
+            if (!expression) {
+                return;
+            }
+
+            const originalExpression = expression;
+
+            try {
+
+                const result =
+                    evaluateExpression(expression);
+
+                const formattedResult =
+                    formatNumber(result);
+
+                completedExpression =
+                    prettyExpression(originalExpression) + " =";
+
+                expression = formattedResult;
+
+                lastResult = result;
+
+                justEvaluated = true;
+
+                errorState = false;
+
+                updateDisplay();
+
+            } catch (error) {
+
+                setError("Error");
+
+            }
+        }
+
+
+        /* =========================================================
+           26. KEYBOARD INPUT: NUMBER
+           ========================================================= */
+
+        function handleKeyboardNumber(key) {
+
+            if (!isDigit(key)) {
+                return false;
+            }
+
+            inputNumber(key);
+
+            return true;
+        }
+
+
+        /* =========================================================
+           27. KEYBOARD INPUT: OPERATOR
+           ========================================================= */
+
+        function handleKeyboardOperator(key) {
+
+            if (key === "+") {
+
+                selectOperator("+");
+
+                return true;
+            }
+
+            if (key === "-") {
+
+                selectOperator("−");
+
+                return true;
+            }
+
+            if (key === "*") {
+
+                selectOperator("×");
+
+                return true;
+            }
+
+            if (key === "/") {
+
+                selectOperator("÷");
+
+                return true;
+            }
+
+            return false;
+        }
+
+
+        /* =========================================================
+           28. KEYBOARD INPUT: PARENTHESES
+           ========================================================= */
+
+        function handleKeyboardParenthesis(key) {
+
+            if (key === "(") {
+
+                inputOpenParenthesis();
+
+                return true;
+            }
+
+            if (key === ")") {
+
+                inputCloseParenthesis();
+
+                return true;
+            }
+
+            return false;
+        }
+
+
+        /* =========================================================
+           29. KEYBOARD INPUT: SPECIAL KEYS
+           ========================================================= */
+
+        function handleKeyboardSpecial(key) {
+
+            if (key === ".") {
+
+                inputDecimal();
+
+                return true;
+            }
+
+            if (key === "%") {
+
+                inputPercent();
+
+                return true;
+            }
+
+            if (key === "Enter" || key === "=") {
+
+                equals();
+
+                return true;
+            }
+
+            if (key === "Backspace") {
+
+                backspace();
+
+                return true;
+            }
+
+            if (key === "Escape" || key === "Delete") {
+
+                clearAll();
+
+                return true;
+            }
+
+            return false;
+        }
+
+
+        /* =========================================================
+           30. KEYBOARD EVENT LISTENER
+           ========================================================= */
+
+        document.addEventListener(
+            "keydown",
+            function(event) {
+
+                /*
+                   Ignore keyboard input when the user is typing
+                   into another input field.
+                */
+
+                const activeElement =
+                    document.activeElement;
+
+                const tagName =
+                    activeElement?.tagName?.toLowerCase();
+
+                if (
+                    tagName === "input" ||
+                    tagName === "textarea" ||
+                    activeElement?.isContentEditable
+                ) {
+
+                    return;
+
+                }
+
+                const key = event.key;
+
+                let handled = false;
+
+                /*
+                   Number keys.
+                */
+
+                if (handleKeyboardNumber(key)) {
+
+                    handled = true;
+
+                }
+
+                /*
+                   Arithmetic operators.
+
+                   Keyboard * becomes ×.
+                   Keyboard / becomes ÷.
+                */
+
+                else if (
+                    handleKeyboardOperator(key)
+                ) {
+
+                    handled = true;
+
+                }
+
+                /*
+                   Parentheses.
+                */
+
+                else if (
+                    handleKeyboardParenthesis(key)
+                ) {
+
+                    handled = true;
+
+                }
+
+                /*
+                   Decimal, percentage, equals,
+                   backspace, escape, and delete.
+                */
+
+                else if (
+                    handleKeyboardSpecial(key)
+                ) {
+
+                    handled = true;
+
+                }
+
+                /*
+                   Prevent browser actions for handled keys.
+                */
+
+                if (handled) {
+
+                    event.preventDefault();
+
+                }
+
+            }
         );
 
-        updateSelectedOperator();
-        updateDisplay();
-    }
 
-    function equals() {
-        if (errorState) {
-            return;
-        }
+        /* =========================================================
+           31. KEYPAD CLICK HANDLER
+           ========================================================= */
 
-        if (pendingOperator !== null) {
-            const first = accumulator;
+        keypad.addEventListener(
+            "click",
+            function(event) {
 
-            const second = waitingForOperand
-                ? accumulator
-                : Number(entry);
+                const button =
+                    event.target.closest("button");
 
-            const operator = pendingOperator;
+                if (!button) {
+                    return;
+                }
 
-            const result = calculate(
-                first,
-                operator,
-                second
-            );
+                /*
+                   Number button.
+                */
 
-            if (!Number.isFinite(result)) {
-                showError();
-                return;
+                if (button.dataset.number !== undefined) {
+
+                    inputNumber(button.dataset.number);
+
+                    return;
+                }
+
+                /*
+                   Operator button.
+                */
+
+                if (button.dataset.op !== undefined) {
+
+                    selectOperator(button.dataset.op);
+
+                    return;
+                }
+
+                /*
+                   Action button.
+                */
+
+                const action = button.dataset.action;
+
+                switch (action) {
+
+                    case "backspace":
+
+                        backspace();
+
+                        break;
+
+                    case "clear":
+
+                        clearEntry();
+
+                        break;
+
+                    case "percent":
+
+                        inputPercent();
+
+                        break;
+
+                    case "decimal":
+
+                        inputDecimal();
+
+                        break;
+
+                    case "sign":
+
+                        toggleSign();
+
+                        break;
+
+                    case "equals":
+
+                        equals();
+
+                        break;
+
+                    default:
+
+                        break;
+
+                }
+
             }
+        );
 
-            lastOperator = operator;
-            lastOperand = second;
 
-            completedExpression =
-                `${formatLiveExpression(first, operator, formatNumber(second))} =`;
+        /* =========================================================
+           32. PREVENT DOUBLE-TAP ZOOM
+           ========================================================= */
 
-            entry = formatNumber(result);
-            accumulator = result;
+        let lastTouchEnd = 0;
 
-            pendingOperator = null;
-            waitingForOperand = false;
-            justEvaluated = true;
+        document.addEventListener(
+            "touchend",
+            function(event) {
 
-            liveExpression = entry;
+                const now = Date.now();
 
-            updateSelectedOperator();
-            updateDisplay();
-            return;
-        }
+                if (now - lastTouchEnd <= 300) {
 
-        // Repeated equals repeats the previous calculation.
-        if (justEvaluated && lastOperator !== null) {
-            const first = Number(entry);
+                    event.preventDefault();
 
-            const result = calculate(
-                first,
-                lastOperator,
-                lastOperand
-            );
+                }
 
-            if (!Number.isFinite(result)) {
-                showError();
-                return;
-            }
+                lastTouchEnd = now;
 
-            completedExpression =
-                `${formatLiveExpression(first, lastOperator, formatNumber(lastOperand))} =`;
+            },
+            { passive: false }
+        );
 
-            entry = formatNumber(result);
-            accumulator = result;
-            liveExpression = entry;
 
-            updateDisplay();
-        }
-    }
+        /* =========================================================
+           33. INITIALIZATION
+           ========================================================= */
 
-    function percent() {
-        if (errorState || waitingForOperand) {
-            return;
-        }
+        function initializeCalculator() {
 
-        const value = Number(entry);
-        let result;
+            expression = "";
 
-        if (
-            pendingOperator === "+" ||
-            pendingOperator === "−"
-        ) {
-            result = accumulator * value / 100;
-        } else {
-            result = value / 100;
-        }
-
-        if (!Number.isFinite(result)) {
-            showError();
-            return;
-        }
-
-        entry = formatNumber(result);
-        waitingForOperand = false;
-        justEvaluated = false;
-
-        if (pendingOperator !== null) {
-            liveExpression = formatLiveExpression(
-                accumulator,
-                pendingOperator,
-                entry
-            );
-        } else {
-            liveExpression = entry;
-        }
-
-        updateDisplay();
-    }
-
-    function toggleSign() {
-        if (errorState) {
-            return;
-        }
-
-        if (entry.startsWith("-")) {
-            entry = entry.slice(1);
-        } else {
-            entry = "-" + entry;
-        }
-
-        if (pendingOperator !== null) {
-            waitingForOperand = false;
-
-            liveExpression = formatLiveExpression(
-                accumulator,
-                pendingOperator,
-                entry
-            );
-        } else {
-            liveExpression = entry;
-        }
-
-        justEvaluated = false;
-        updateDisplay();
-    }
-
-    function backspace() {
-        if (errorState) {
-            clearAll();
-            return;
-        }
-
-        if (justEvaluated) {
-            justEvaluated = false;
-            lastOperator = null;
-            lastOperand = null;
-            accumulator = null;
-            pendingOperator = null;
             completedExpression = "";
-            liveExpression = entry;
-        }
 
-        if (pendingOperator !== null && waitingForOperand) {
-            // Remove the pending operator.
-            entry = formatNumber(accumulator);
+            justEvaluated = false;
 
-            accumulator = null;
-            pendingOperator = null;
-            waitingForOperand = false;
+            errorState = false;
 
-            liveExpression = entry;
-
-            updateSelectedOperator();
-            updateDisplay();
-            return;
-        }
-
-        if (pendingOperator !== null && !waitingForOperand) {
-            // Remove the entire second operand.
-            entry = "0";
-            waitingForOperand = true;
-
-            liveExpression = formatLiveExpression(
-                accumulator,
-                pendingOperator
-            );
+            lastResult = null;
 
             updateDisplay();
-            return;
+
         }
 
-        if (entry.length > 1) {
-            entry = entry.slice(0, -1);
 
-            if (entry === "-" || entry === "") {
-                entry = "0";
-            }
-        } else {
-            entry = "0";
-        }
+        /* =========================================================
+           34. START CALCULATOR
+           ========================================================= */
 
-        liveExpression = entry;
-        updateDisplay();
-    }
+        initializeCalculator();
 
-    function showError() {
-        entry = "Error";
 
-        accumulator = null;
-        pendingOperator = null;
+        /* =========================================================
+           35. DEBUG-FREE PRODUCTION MODE
+           ========================================================= */
 
-        waitingForOperand = false;
-        justEvaluated = false;
-        errorState = true;
+        /*
+           The calculator does not use eval().
+           The parser evaluates the expression directly.
+           This avoids executing arbitrary JavaScript.
+        */
 
-        lastOperator = null;
-        lastOperand = null;
 
-        liveExpression = "Error";
-        completedExpression = "";
+        /* =========================================================
+           36. KEYBOARD REFERENCE
+           ========================================================= */
 
-        updateSelectedOperator();
-        updateDisplay();
-    }
+        /*
+           0-9       Enter numbers
+           +         Addition
+           -         Subtraction
+           *         Multiplication, displayed as ×
+           /         Division, displayed as ÷
+           (         Opening parenthesis
+           )         Closing parenthesis
+           .         Decimal point
+           %         Percentage
+           Enter     Calculate
+           =         Calculate
+           Backspace Delete one character
+           Escape    Clear calculator
+           Delete    Clear calculator
+        */
 
-    // Button interaction
-    document.querySelector(".keys").addEventListener("click", event => {
-        const button = event.target.closest("button");
 
-        if (!button) {
-            return;
-        }
+        /* =========================================================
+           37. EXPRESSION EXAMPLES
+           ========================================================= */
 
-        if (button.dataset.number !== undefined) {
-            inputNumber(button.dataset.number);
-            return;
-        }
+        /*
+           2+3*4
+           Result: 14
 
-        if (button.dataset.op !== undefined) {
-            selectOperator(button.dataset.op);
-            return;
-        }
+           (2+3)*4
+           Result: 20
 
-        switch (button.dataset.action) {
-            case "clear":
-                handleClear();
-                break;
+           12*3/2
+           Display: 12×3÷2
+           Result: 18
 
-            case "backspace":
-                backspace();
-                break;
+           2+1*3
+           Result: 5
 
-            case "percent":
-                percent();
-                break;
+           (2+1)*3
+           Result: 9
 
-            case "sign":
-                toggleSign();
-                break;
+           10/2+4
+           Display: 10÷2+4
+           Result: 9
 
-            case "decimal":
-                inputDecimal();
-                break;
+           100%
+           Result: 1
 
-            case "equals":
-                equals();
-                break;
-        }
-    });
+           50+50
+           Result: 100
+        */
 
-    // Keyboard support
-    document.addEventListener("keydown", event => {
-        if (
-            event.target instanceof HTMLInputElement ||
-            event.target instanceof HTMLTextAreaElement
-        ) {
-            return;
-        }
 
-        const key = event.key;
+        /* =========================================================
+           38. DISPLAY SYMBOL REFERENCE
+           ========================================================= */
 
-        if (/^[0-9]$/.test(key)) {
-            inputNumber(key);
-        } else if (key === ".") {
-            inputDecimal();
-        } else if (key === "+") {
-            selectOperator("+");
-        } else if (key === "-") {
-            selectOperator("−");
-        } else if (key === "*") {
-            selectOperator("×");
-        } else if (key === "/") {
-            event.preventDefault();
-            selectOperator("÷");
-        } else if (key === "%") {
-            percent();
-        } else if (key === "Enter" || key === "=") {
-            event.preventDefault();
-            equals();
-        } else if (key === "Backspace") {
-            event.preventDefault();
-            backspace();
-        } else if (key === "Escape") {
-            clearAll();
-        }
-    });
+        /*
+           Internal multiplication: *
+           Visible multiplication:  ×
 
-    updateDisplay();
-</script>
+           Internal division:      /
+           Visible division:       ÷
+
+           Internal subtraction:   -
+           Visible subtraction:    −
+        */
+
+
+        /* =========================================================
+           39. PARENTHESES BEHAVIOR
+           ========================================================= */
+
+        /*
+           Parentheses are not keypad buttons.
+
+           They are entered using the physical keyboard.
+
+           The calculator supports nested parentheses.
+
+           Example:
+
+           ((2+3)*4)
+
+           The parser evaluates the innermost expression first.
+
+           An unmatched opening or closing parenthesis
+           produces an error when equals is pressed.
+        */
+
+
+        /* =========================================================
+           40. OPERATOR PRECEDENCE
+           ========================================================= */
+
+        /*
+           The parser follows standard arithmetic precedence.
+
+           First:
+               Parentheses
+
+           Second:
+               Unary plus and unary minus
+
+           Third:
+               Percentages
+
+           Fourth:
+               Multiplication and division
+
+           Fifth:
+               Addition and subtraction
+
+           Operators with the same precedence are evaluated
+           from left to right.
+        */
+
+
+        /* =========================================================
+           41. SAFETY CHECKS
+           ========================================================= */
+
+        /*
+           The parser checks for:
+
+           Empty expressions
+           Invalid characters
+           Missing closing parentheses
+           Extra closing parentheses
+           Incomplete expressions
+           Division by zero
+           Unexpected tokens
+           Non-finite numeric results
+        */
+
+
+        /* =========================================================
+           42. DISPLAY BEHAVIOR
+           ========================================================= */
+
+        /*
+           The gray display line shows the completed expression.
+
+           The white display line shows the current expression
+           or the calculated result.
+
+           Starting a new number after equals clears the
+           previous expression.
+
+           Pressing an operator after equals continues from
+           the previous result.
+        */
+
+
+        /* =========================================================
+           43. INPUT BEHAVIOR
+           ========================================================= */
+
+        /*
+           Typing a number after a closing parenthesis inserts
+           multiplication automatically.
+
+           Typing an opening parenthesis after a number inserts
+           multiplication automatically.
+
+           Typing a decimal point starts a decimal number
+           when appropriate.
+
+           Repeated decimal points in the same number
+           are ignored.
+        */
+
+
+        /* =========================================================
+           44. BUTTON BEHAVIOR
+           ========================================================= */
+
+        /*
+           AC:
+               Clears the current entry.
+
+           C:
+               Appears while there is an expression.
+
+           Backspace:
+               Removes the final character.
+
+           +/−:
+               Toggles the sign of the last entered number.
+
+           %:
+               Converts the preceding number into a percentage.
+
+           =:
+               Evaluates the current expression.
+        */
+
+
+        /* =========================================================
+           45. END OF CALCULATOR SCRIPT
+           ========================================================= */
+
+    </script>
 
 </body>
 </html>
